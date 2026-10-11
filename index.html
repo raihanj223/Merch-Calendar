@@ -2,12 +2,12 @@
 <html lang="bn" class="h-full bg-slate-950"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pretty Sweaters Limited - Merchandising Portal</title>
+    <title>Pretty Sweaters Ltd - Merchandising Portal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter & Hind Siliguri -->
@@ -78,6 +78,18 @@
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
         }
 
+        /* Neon Glow Clock */
+        .neon-clock {
+            color: #00f0ff;
+            text-shadow: 0 0 5px #00f0ff, 0 0 15px #00f0ff, 0 0 30px #0284c7, 0 0 60px #0284c7;
+        }
+
+        .glowing-date-text {
+            color: #38bdf8;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.9), 0 0 18px rgba(14, 165, 233, 0.8);
+            font-weight: 700;
+        }
+
         /* Wall Calendar Binder Ring Styling */
         .calendar-binder-ring {
             width: 14px;
@@ -106,15 +118,18 @@
             background: rgba(56, 189, 248, 0.7);
         }
 
-        /* Glowing text & ambient lights */
-        .glow-text {
-            text-shadow: 0 0 16px rgba(56, 189, 248, 0.7);
-        }
-        .glow-emerald {
-            text-shadow: 0 0 16px rgba(52, 211, 153, 0.7);
+        /* Glass Analog Clock Hands */
+        .analog-hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
         }
 
-        /* Entrance keyframes for smooth UI dashboard rendering */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -156,14 +171,10 @@
     <!-- Login Screen Overlay -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl border border-slate-700/80 p-8 shadow-2xl animate-fade-in-up space-y-6">
-            <div class="text-center space-y-3">
-                <!-- Pretty Group PG Glass Logo -->
-                <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-400/20 via-sky-500/10 to-blue-600/20 flex flex-col items-center justify-center shadow-xl border border-cyan-400/30 mx-auto p-2 backdrop-blur-md">
-                    <svg class="w-16 h-12 text-cyan-400 filter drop-shadow-[0_2px_8px_rgba(56,189,248,0.5)]" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15 10H45C58.8071 10 70 21.1929 70 35C70 48.8071 58.8071 60 45 60H30V75H15V10Z" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M40 38H65C73.2843 38 80 44.7157 80 53C80 61.2843 73.2843 68 65 68H52V52" stroke="#38bdf8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span class="text-[9px] font-extrabold tracking-widest text-cyan-300 mt-1 uppercase">Pretty Group</span>
+            <div class="text-center space-y-2">
+                <!-- PG Logo Image replacing lock symbol -->
+                <div class="w-20 h-20 rounded-2xl bg-slate-900/80 flex items-center justify-center border border-sky-400/30 p-2 mx-auto shadow-lg shadow-sky-500/20">
+                    <img src="Gemini_Generated_Image_qu44c4qu44c4qu44.jpg" alt="Pretty Group Logo" class="w-full h-full object-contain rounded-xl">
                 </div>
                 <h2 class="text-xl font-extrabold text-white">Pretty Sweaters Ltd Portal</h2>
                 <p class="text-xs text-sky-300/80">Please enter your credentials to access</p>
@@ -208,12 +219,13 @@
             
             <!-- Brand Logo & Title -->
             <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/30">
-                    <i class="fa-solid fa-shirt text-2xl animate-bounce" style="animation-duration: 3s;"></i>
+                <!-- Replacement of garment picture box with PG Logo -->
+                <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-cyan-400/40 p-1 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <img src="Gemini_Generated_Image_qu44c4qu44c4qu44.jpg" alt="PG Logo" class="w-full h-full object-contain rounded-xl">
                 </div>
                 <div>
-                    <h1 id="i18n-company-title" class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-cyan-100 to-white">Pretty Sweaters Limited</h1>
-                    <p id="i18n-company-subtitle" class="text-xs text-sky-300/80 font-medium tracking-wide">Pretty Sweaters Limited • Merchandising Management System</p>
+                    <h1 id="i18n-company-title" class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-cyan-100 to-white">Pretty Sweaters Ltd</h1>
+                    <p id="i18n-company-subtitle" class="text-xs text-sky-300/80 font-medium tracking-wide">Pretty Sweaters Ltd • Merchandising Management System</p>
                 </div>
             </div>
 
@@ -252,37 +264,55 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
 
-        <!-- Top Row: Animated Digital Clock & Wall Paper Calendar -->
+        <!-- Top Row: Animated Digital Clock & Frameless Glass Analog Clock -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Real-time Digital Clock Widget -->
+            <!-- Real-time Neon Digital Clock & Frameless Glass Analog Clock Widget -->
             <div class="lg:col-span-5 flex flex-col justify-between glass-panel rounded-2xl p-6 relative overflow-hidden animate-fade-in-up stagger-1">
                 <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
                 <div>
-                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-2">
                         <span class="text-xs font-semibold tracking-wider text-sky-400 uppercase flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> <span id="i18n-live-clock-label">Digital Live Clock</span>
                         </span>
                         <span id="current-timezone-badge" class="text-[11px] bg-slate-900/80 text-sky-300 px-2.5 py-1 rounded-lg border border-slate-700/80 font-mono">BST (+06)</span>
                     </div>
 
-                    <!-- Clock Display -->
-                    <div class="text-center py-4">
-                        <div id="digital-clock" class="text-4xl sm:text-5xl font-mono font-extrabold text-white tracking-widest glow-text">11:43:30 PM</div>
-                        <div id="digital-date" class="text-base text-sky-200/90 font-medium mt-2">Sunday, October 11, 2026</div>
+                    <!-- Neon Clock Display -->
+                    <div class="text-center py-2">
+                        <div id="digital-clock" class="text-3xl sm:text-4xl font-mono font-extrabold neon-clock tracking-widest">11:43:30 PM</div>
+                        <div id="digital-date" class="text-xs text-sky-200/90 font-medium mt-1">Sunday, October 11, 2026</div>
+                    </div>
+
+                    <!-- Frameless Wall-glued Glass Analog Clock -->
+                    <div class="flex justify-center my-3 relative">
+                        <div class="w-28 h-28 relative flex items-center justify-center">
+                            <!-- 12 Wall Markers -->
+                            <div class="absolute text-[10px] font-bold text-sky-300 -top-1">12</div>
+                            <div class="absolute text-[10px] font-bold text-sky-300 -right-1">3</div>
+                            <div class="absolute text-[10px] font-bold text-sky-300 -bottom-1">6</div>
+                            <div class="absolute text-[10px] font-bold text-sky-300 -left-1">9</div>
+
+                            <!-- Glass Hands -->
+                            <div id="analog-hour" class="analog-hand w-1.5 h-7 bg-cyan-200/80 border border-sky-300/60 z-20"></div>
+                            <div id="analog-minute" class="analog-hand w-1 h-10 bg-sky-300/80 border border-cyan-300/60 z-30"></div>
+                            <div id="analog-second" class="analog-hand w-0.5 h-11 bg-rose-400/90 z-40"></div>
+                            <!-- Center Glass Pin -->
+                            <div class="w-3 h-3 rounded-full bg-cyan-400 border border-white z-50 shadow-md shadow-cyan-500/80"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Clock Dynamic Stats -->
-                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-700/60">
-                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div class="grid grid-cols-2 gap-3 mt-2 pt-2 border-t border-slate-700/60">
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
                         <div id="i18n-active-orders-label" class="text-xs text-slate-400">Active Styles</div>
-                        <div id="quick-active-orders" class="text-2xl font-bold text-sky-400 mt-1">2</div>
+                        <div id="quick-active-orders" class="text-xl font-bold text-sky-400 mt-0.5">2</div>
                     </div>
-                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
                         <div id="i18n-upcoming-ship-label" class="text-xs text-slate-400">Upcoming Shipments</div>
-                        <div id="quick-upcoming-ship" class="text-2xl font-bold text-amber-400 mt-1">2</div>
+                        <div id="quick-upcoming-ship" class="text-xl font-bold text-amber-400 mt-0.5">2</div>
                     </div>
                 </div>
             </div>
@@ -580,13 +610,13 @@
     </div>
 
     <script>
-        // 5 Specific Authorized Users & Short Passwords
+        // Multi-User Symbolic Credentials List (5 Users)
         const validUsers = {
-            "mridul": "m123",
-            "rasel": "r123",
-            "rounek": "r456",
-            "solaiman": "s123",
-            "raihan": "r789"
+            "mridul": "m123",       // 1. Mridul kumar shaha
+            "shafikul": "s123",     // 2. Shafikul islam rasel
+            "rounek": "r123",       // 3. Rounek rahman
+            "solaiman": "s456",     // 4. Solaiman hossen
+            "raihan": "r456"        // 5. Raihan jamil
         };
 
         function handleLogin(e) {
@@ -640,8 +670,8 @@
         let currentLang = localStorage.getItem('priti_app_lang') || 'BN';
         const i18n = {
             BN: {
-                companyTitle: "প্রীতি সোয়েটার লিমিটেড",
-                companySubtitle: "প্রীতি সোয়েটার লিমিটেড • মার্চেন্ডাইজিং পোর্টাল",
+                companyTitle: "Pretty Sweaters Ltd",
+                companySubtitle: "Pretty Sweaters Ltd • Merchandising Management System",
                 btnAddStyle: "নতুন স্টাইল যুক্ত করুন",
                 btnExcel: "Excel",
                 btnZip: "App ZIP",
@@ -692,20 +722,24 @@
                 months: ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'],
                 daysFull: ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'],
                 tnaSteps: {
-                    yarnApproval: '১. সুতা বুকিং (Yarn Booking)',
-                    labDip: '২. ল্যাব ডিপ (Lab Dip)',
-                    fitSample: '৩. ফিট স্যাম্পল (Fit Sample)',
-                    ppSample: '৪. পিপি স্যাম্পল (PP Sample)',
-                    bulkYarn: '৫. বাল্ক সুতা ইন-হাউস',
-                    knitting: '৬. নিটিং ও লিংকিং',
-                    washing: '৭. ওয়াশিং ও ফিনিশিং',
-                    inspection: '৮. এফআরআই ইন্সপেকশন',
-                    shippingDocs: '৯. শিপিং ডকুমেন্টস'
+                    destination: '১. Destination',
+                    color: '২. Color Approval',
+                    fitSample: '৩. Fit Sample',
+                    ppSample: '৪. PP Sample',
+                    productionFile: '৫. Production File',
+                    bulkYarn: '৬. Bulk Yarn Inhouse',
+                    knitting: '৭. Knitting',
+                    linking: '৮. Linking',
+                    finishing: '৯. Finishing',
+                    washing: '১০. Washing',
+                    packing: '১১. Packing',
+                    inspection: '১২. Inspection',
+                    shipment: '১৩. Shipment'
                 }
             },
             EN: {
-                companyTitle: "Pretty Sweaters Limited",
-                companySubtitle: "Pretty Sweaters Limited • Merchandising Management System",
+                companyTitle: "Pretty Sweaters Ltd",
+                companySubtitle: "Pretty Sweaters Ltd • Merchandising Management System",
                 btnAddStyle: "Add New Style",
                 btnExcel: "Excel Export",
                 btnZip: "App ZIP",
@@ -756,15 +790,19 @@
                 months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 daysFull: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 tnaSteps: {
-                    yarnApproval: '1. Yarn Booking',
-                    labDip: '2. Lab Dip Approved',
+                    destination: '1. Destination',
+                    color: '2. Color Approval',
                     fitSample: '3. Fit Sample',
                     ppSample: '4. PP Sample',
-                    bulkYarn: '5. Bulk Yarn In-house',
-                    knitting: '6. Knitting & Linking',
-                    washing: '7. Washing & Finish',
-                    inspection: '8. FRI Inspection',
-                    shippingDocs: '9. Shipping Docs'
+                    productionFile: '5. Production File',
+                    bulkYarn: '6. Bulk Yarn Inhouse',
+                    knitting: '7. Knitting',
+                    linking: '8. Linking',
+                    finishing: '9. Finishing',
+                    washing: '10. Washing',
+                    packing: '11. Packing',
+                    inspection: '12. Inspection',
+                    shipment: '13. Shipment'
                 }
             }
         };
@@ -827,7 +865,6 @@
             document.getElementById('i18n-btn-delete-note').innerText = lang.btnDeleteNote;
             document.getElementById('i18n-btn-save-note').innerText = lang.btnSaveNote;
 
-            // Re-render Clock, Calendar Header, & Style List
             updateDigitalClock();
             renderCalendarDaysHeader();
             renderCalendar();
@@ -844,6 +881,11 @@
                 buyer: 'H&M Sweden',
                 gauge: '12GG',
                 yarn: '100% Cotton 2/28s Corespun',
+                buttonsZippers: 'Yes (Plastic Buttons)',
+                knittingTime: '45 mins',
+                linkingTime: '20 mins',
+                finishingTime: '15 mins',
+                weight: '320g',
                 quantity: 15000,
                 fob: 7.80,
                 orderDate: '2026-09-15',
@@ -852,43 +894,22 @@
                 image: '',
                 techpackName: 'HM_PSL-7740_TechPack.pdf',
                 techpackData: '',
-                tna: {
-                    yarnApproval: { status: 'Approved', date: '2026-09-25' },
-                    labDip: { status: 'Approved', date: '2026-09-28' },
-                    fitSample: { status: 'Submitted', date: '2026-10-05' },
-                    ppSample: { status: 'Pending', date: '' },
-                    bulkYarn: { status: 'Pending', date: '' },
-                    knitting: { status: 'Pending', date: '' },
-                    washing: { status: 'Pending', date: '' },
-                    inspection: { status: 'Pending', date: '' },
-                    shippingDocs: { status: 'Pending', date: '' }
-                }
-            },
-            {
-                id: 'style_102',
-                styleNo: 'PSL-9021',
-                buyer: 'Zara Man',
-                gauge: '7GG',
-                yarn: '60% Cotton 40% Acrylic Heavy Twist',
-                quantity: 8500,
-                fob: 11.50,
-                orderDate: '2026-08-20',
-                shipDate: '2026-10-30',
-                status: 'Knitting/Production',
-                image: '',
-                techpackName: 'Zara_Cardigan_TechSpec.pdf',
-                techpackData: '',
-                tna: {
-                    yarnApproval: { status: 'Approved', date: '2026-09-01' },
-                    labDip: { status: 'Approved', date: '2026-09-05' },
-                    fitSample: { status: 'Approved', date: '2026-09-18' },
-                    ppSample: { status: 'Approved', date: '2026-09-28' },
-                    bulkYarn: { status: 'Approved', date: '2026-10-02' },
-                    knitting: { status: 'In-Progress', date: '2026-10-08' },
-                    washing: { status: 'Pending', date: '' },
-                    inspection: { status: 'Pending', date: '' },
-                    shippingDocs: { status: 'Pending', date: '' }
-                }
+                destinationCountry: 'Brazil',
+                destinationDepartment: 'Menswear',
+                colors: [{ name: 'Navy Blue', image: '', status: 'Labdip approval', date: '12-Aug-2026' }],
+                fitSampleDate: '12-Aug-2026',
+                fitSampleStatus: 'Approved',
+                ppSampleDate: '15-Aug-2026',
+                ppSampleStatus: 'Pending',
+                productionFileStatus: 'Pending',
+                bulkYarnStatus: 'sample yarn',
+                pcsKnitting: 1200,
+                pcsLinking: 1100,
+                pcsFinishing: 950,
+                pcsWashing: 900,
+                pcsPacking: 850,
+                inspectionStatus: 'Pending',
+                shipmentStatus: 'Pending'
             }
         ];
 
@@ -925,6 +946,15 @@
 
             document.getElementById('digital-clock').innerText = timeStr;
             document.getElementById('digital-date').innerText = dateStr;
+
+            // Analog Clock Hands Rotation
+            const secDeg = (now.getSeconds() / 60) * 360;
+            const minDeg = (now.getMinutes() / 60) * 360 + (now.getSeconds() / 60) * 6;
+            const hourDeg = ((now.getHours() % 12) / 12) * 360 + (now.getMinutes() / 60) * 30;
+
+            document.getElementById('analog-second').style.transform = `rotate(${secDeg}deg)`;
+            document.getElementById('analog-minute').style.transform = `rotate(${minDeg}deg)`;
+            document.getElementById('analog-hour').style.transform = `rotate(${hourDeg}deg)`;
         }
         setInterval(updateDigitalClock, 1000);
 
@@ -1041,11 +1071,7 @@
 
             let pendingCount = 0;
             styles.forEach(s => {
-                if (s.tna) {
-                    Object.values(s.tna).forEach(item => {
-                        if (item.status === 'Pending' || item.status === 'Submitted') pendingCount++;
-                    });
-                }
+                if (s.fitSampleStatus === 'Pending' || s.ppSampleStatus === 'Pending') pendingCount++;
             });
 
             document.getElementById('kpi-total-styles').innerText = totalStyles;
@@ -1056,6 +1082,16 @@
             document.getElementById('quick-active-orders').innerText = totalStyles;
             const upcomingShips = styles.filter(s => s.status !== 'Shipped').length;
             document.getElementById('quick-upcoming-ship').innerText = upcomingShips;
+        }
+
+        function calculateCosting(styleId) {
+            const yarnCost = parseFloat(document.getElementById(`cost-yarn-${styleId}`).value) || 0;
+            const accCost = parseFloat(document.getElementById(`cost-acc-${styleId}`).value) || 0;
+            const cmCost = parseFloat(document.getElementById(`cost-cm-${styleId}`).value) || 0;
+            const overhead = parseFloat(document.getElementById(`cost-oh-${styleId}`).value) || 0;
+
+            const totalSampleCost = yarnCost + accCost + cmCost + overhead;
+            document.getElementById(`cost-result-${styleId}`).innerText = `$${totalSampleCost.toFixed(2)}`;
         }
 
         function renderStyleList() {
@@ -1127,6 +1163,32 @@
                         </div>
                     </div>
 
+                    <!-- Added Style Spec Bar & Costing Calculator -->
+                    <div class="bg-slate-900/80 p-3.5 rounded-xl border border-sky-500/30 space-y-3">
+                        <div class="text-xs font-bold text-cyan-300 flex items-center justify-between">
+                            <span><i class="fa-solid fa-sliders text-sky-400 mr-1"></i> Style Specs & Costing Calculator</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-[11px]">
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Style Yarn:</span> <strong class="text-white">${s.yarn}</strong></div>
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Button/Zipper:</span> <strong class="text-white">${s.buttonsZippers || 'N/A'}</strong></div>
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Knit Time:</span> <strong class="text-white">${s.knittingTime || 'N/A'}</strong></div>
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Link Time:</span> <strong class="text-white">${s.linkingTime || 'N/A'}</strong></div>
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Finish Time:</span> <strong class="text-white">${s.finishingTime || 'N/A'}</strong></div>
+                            <div class="bg-slate-800/60 p-2 rounded-lg"><span class="text-slate-400 block">Weight:</span> <strong class="text-white">${s.weight || 'N/A'}</strong></div>
+                        </div>
+
+                        <!-- Sample Costing Calculator Inputs -->
+                        <div class="pt-2 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-5 gap-2 items-center text-xs">
+                            <input type="number" id="cost-yarn-${s.id}" oninput="calculateCosting('${s.id}')" placeholder="Yarn ($)" class="glass-input p-1.5 rounded-lg text-xs">
+                            <input type="number" id="cost-acc-${s.id}" oninput="calculateCosting('${s.id}')" placeholder="Acc/Trims ($)" class="glass-input p-1.5 rounded-lg text-xs">
+                            <input type="number" id="cost-cm-${s.id}" oninput="calculateCosting('${s.id}')" placeholder="CM Cost ($)" class="glass-input p-1.5 rounded-lg text-xs">
+                            <input type="number" id="cost-oh-${s.id}" oninput="calculateCosting('${s.id}')" placeholder="Overhead ($)" class="glass-input p-1.5 rounded-lg text-xs">
+                            <div class="bg-emerald-500/20 border border-emerald-500/40 p-1.5 rounded-lg text-center font-bold text-emerald-300">
+                                Cost: <span id="cost-result-${s.id}">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Metrics Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800 text-xs">
                         <div>
@@ -1156,21 +1218,137 @@
                         ${s.techpackName ? `<a href="${techpackLink}" download="${s.techpackName}" class="text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1"><i class="fa-solid fa-download"></i> ${lang.downloadText}</a>` : '<span class="text-slate-500">N/A</span>'}
                     </div>
 
-                    <!-- Time & Action Steps -->
+                    <!-- Customized Time & Action Steps (13 Customized Buttons) -->
                     <div class="pt-2">
                         <div class="text-xs font-bold text-sky-300 mb-2.5 flex items-center gap-2">
                             <i class="fa-solid fa-timeline"></i> ${lang.tnaTitle}
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                            ${renderTnABadge(s.id, 'yarnApproval', lang.tnaSteps.yarnApproval, s.tna?.yarnApproval)}
-                            ${renderTnABadge(s.id, 'labDip', lang.tnaSteps.labDip, s.tna?.labDip)}
-                            ${renderTnABadge(s.id, 'fitSample', lang.tnaSteps.fitSample, s.tna?.fitSample)}
-                            ${renderTnABadge(s.id, 'ppSample', lang.tnaSteps.ppSample, s.tna?.ppSample)}
-                            ${renderTnABadge(s.id, 'bulkYarn', lang.tnaSteps.bulkYarn, s.tna?.bulkYarn)}
-                            ${renderTnABadge(s.id, 'knitting', lang.tnaSteps.knitting, s.tna?.knitting)}
-                            ${renderTnABadge(s.id, 'washing', lang.tnaSteps.washing, s.tna?.washing)}
-                            ${renderTnABadge(s.id, 'inspection', lang.tnaSteps.inspection, s.tna?.inspection)}
-                            ${renderTnABadge(s.id, 'shippingDocs', lang.tnaSteps.shippingDocs, s.tna?.shippingDocs)}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                            
+                            <!-- 1. Destination Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.destination}</div>
+                                <div class="grid grid-cols-2 gap-1 text-[11px]">
+                                    <input type="text" value="${s.destinationCountry || ''}" onchange="updateStyleField('${s.id}', 'destinationCountry', this.value)" placeholder="Country..." class="glass-input px-1.5 py-0.5 rounded text-[10px]">
+                                    <input type="text" value="${s.destinationDepartment || ''}" onchange="updateStyleField('${s.id}', 'destinationDepartment', this.value)" placeholder="Dept..." class="glass-input px-1.5 py-0.5 rounded text-[10px]">
+                                </div>
+                            </div>
+
+                            <!-- 2. Color Button (Up to 10 Colors with Ref Pic & Date Dropdown) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300 flex justify-between items-center">
+                                    <span>${lang.tnaSteps.color}</span>
+                                    <button onclick="addColorRow('${s.id}')" class="text-[10px] text-sky-400 hover:underline">+ Add Color</button>
+                                </div>
+                                <div class="space-y-1 max-h-24 overflow-y-auto custom-scrollbar">
+                                    ${(s.colors || []).map((c, idx) => `
+                                        <div class="p-1 bg-slate-900/60 rounded border border-slate-800 space-y-0.5 text-[10px]">
+                                            <input type="text" value="${c.name || ''}" onchange="updateColorName('${s.id}',${idx}, this.value)" placeholder="Color name..." class="glass-input w-full px-1 py-0.5 rounded">
+                                            <select onchange="updateColorStatus('${s.id}',${idx}, this.value)" class="glass-input w-full px-1 py-0.5 rounded bg-slate-900">
+                                                <option value="Labdip request" ${c.status==='Labdip request'?'selected':''}>Labdip request</option>
+                                                <option value="Labdip submitted" ${c.status==='Labdip submitted'?'selected':''}>Labdip submitted</option>
+                                                <option value="Labdip approval" ${c.status==='Labdip approval'?'selected':''}>Labdip approval</option>
+                                                <option value="Re-submitted" ${c.status==='Re-submitted'?'selected':''}>Re-submitted</option>
+                                            </select>
+                                            <input type="text" value="${c.date || '12-Aug-2026'}" onchange="updateColorDate('${s.id}',${idx}, this.value)" placeholder="12-Aug-2026" class="glass-input w-full px-1 py-0.5 rounded glowing-date-text">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- 3. Fit Sample Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.fitSample}</div>
+                                <select onchange="updateStyleField('${s.id}', 'fitSampleStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="Pending" ${s.fitSampleStatus==='Pending'?'selected':''}>Pending</option>
+                                    <option value="Submitted" ${s.fitSampleStatus==='Submitted'?'selected':''}>Submitted</option>
+                                    <option value="Approved" ${s.fitSampleStatus==='Approved'?'selected':''}>Approved</option>
+                                    <option value="Re-submitted" ${s.fitSampleStatus==='Re-submitted'?'selected':''}>Re-submitted</option>
+                                </select>
+                                <input type="text" value="${s.fitSampleDate || '12-Aug-2026'}" onchange="updateStyleField('${s.id}', 'fitSampleDate', this.value)" placeholder="12-Aug-2026" class="glass-input w-full px-1.5 py-0.5 rounded glowing-date-text text-[11px]">
+                            </div>
+
+                            <!-- 4. PP Sample Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.ppSample}</div>
+                                <select onchange="updateStyleField('${s.id}', 'ppSampleStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="Pending" ${s.ppSampleStatus==='Pending'?'selected':''}>Pending</option>
+                                    <option value="Submitted" ${s.ppSampleStatus==='Submitted'?'selected':''}>Submitted</option>
+                                    <option value="Approved" ${s.ppSampleStatus==='Approved'?'selected':''}>Approved</option>
+                                    <option value="Re-submitted" ${s.ppSampleStatus==='Re-submitted'?'selected':''}>Re-submitted</option>
+                                </select>
+                                <input type="text" value="${s.ppSampleDate || '12-Aug-2026'}" onchange="updateStyleField('${s.id}', 'ppSampleDate', this.value)" placeholder="12-Aug-2026" class="glass-input w-full px-1.5 py-0.5 rounded glowing-date-text text-[11px]">
+                            </div>
+
+                            <!-- 5. Production File Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.productionFile}</div>
+                                <select onchange="updateStyleField('${s.id}', 'productionFileStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="Pending" ${s.productionFileStatus==='Pending'?'selected':''}>1. Pending</option>
+                                    <option value="Hand Over Done" ${s.productionFileStatus==='Hand Over Done'?'selected':''}>2. Hand Over Done</option>
+                                </select>
+                            </div>
+
+                            <!-- 6. Bulk Yarn Inhouse Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.bulkYarn}</div>
+                                <select onchange="updateStyleField('${s.id}', 'bulkYarnStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="sample yarn" ${s.bulkYarnStatus==='sample yarn'?'selected':''}>1. Sample Yarn</option>
+                                    <option value="bulk partial" ${s.bulkYarnStatus==='bulk partial'?'selected':''}>2. Bulk Partial</option>
+                                    <option value="full inhoused" ${s.bulkYarnStatus==='full inhoused'?'selected':''}>3. Full Inhoused</option>
+                                </select>
+                            </div>
+
+                            <!-- 7. Knitting (Manual Pcs) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.knitting} (Pcs)</div>
+                                <input type="number" value="${s.pcsKnitting || 0}" onchange="updateStyleField('${s.id}', 'pcsKnitting', parseInt(this.value))" placeholder="Pcs..." class="glass-input w-full px-1.5 py-0.5 rounded text-[11px]">
+                            </div>
+
+                            <!-- 8. Linking (Manual Pcs) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.linking} (Pcs)</div>
+                                <input type="number" value="${s.pcsLinking || 0}" onchange="updateStyleField('${s.id}', 'pcsLinking', parseInt(this.value))" placeholder="Pcs..." class="glass-input w-full px-1.5 py-0.5 rounded text-[11px]">
+                            </div>
+
+                            <!-- 9. Finishing (Manual Pcs) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.finishing} (Pcs)</div>
+                                <input type="number" value="${s.pcsFinishing || 0}" onchange="updateStyleField('${s.id}', 'pcsFinishing', parseInt(this.value))" placeholder="Pcs..." class="glass-input w-full px-1.5 py-0.5 rounded text-[11px]">
+                            </div>
+
+                            <!-- 10. Washing (Manual Pcs) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.washing} (Pcs)</div>
+                                <input type="number" value="${s.pcsWashing || 0}" onchange="updateStyleField('${s.id}', 'pcsWashing', parseInt(this.value))" placeholder="Pcs..." class="glass-input w-full px-1.5 py-0.5 rounded text-[11px]">
+                            </div>
+
+                            <!-- 11. Packing (Manual Pcs) -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.packing} (Pcs)</div>
+                                <input type="number" value="${s.pcsPacking || 0}" onchange="updateStyleField('${s.id}', 'pcsPacking', parseInt(this.value))" placeholder="Pcs..." class="glass-input w-full px-1.5 py-0.5 rounded text-[11px]">
+                            </div>
+
+                            <!-- 12. Inspection Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.inspection}</div>
+                                <select onchange="updateStyleField('${s.id}', 'inspectionStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="Pending" ${s.inspectionStatus==='Pending'?'selected':''}>Pending</option>
+                                    <option value="FRI Passed" ${s.inspectionStatus==='FRI Passed'?'selected':''}>FRI Passed</option>
+                                    <option value="Re-inspection" ${s.inspectionStatus==='Re-inspection'?'selected':''}>Re-inspection</option>
+                                </select>
+                            </div>
+
+                            <!-- 13. Shipment Button -->
+                            <div class="p-2.5 rounded-xl border bg-slate-800/80 border-slate-700/60 text-xs space-y-1">
+                                <div class="font-semibold text-cyan-300">${lang.tnaSteps.shipment}</div>
+                                <select onchange="updateStyleField('${s.id}', 'shipmentStatus', this.value)" class="glass-input w-full px-1.5 py-0.5 rounded text-[11px] bg-slate-900">
+                                    <option value="Pending" ${s.shipmentStatus==='Pending'?'selected':''}>Pending</option>
+                                    <option value="Partial Shipped" ${s.shipmentStatus==='Partial Shipped'?'selected':''}>Partial Shipped</option>
+                                    <option value="Shipped" ${s.shipmentStatus==='Shipped'?'selected':''}>Fully Shipped</option>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
                 `;
@@ -1181,41 +1359,50 @@
             calculateKPIs();
         }
 
-        function renderTnABadge(styleId, tnaKey, label, data = { status: 'Pending', date: '' }) {
-            const statusColors = {
-                'Approved': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
-                'In-Progress': 'bg-amber-500/20 text-amber-300 border-amber-500/40',
-                'Submitted': 'bg-sky-500/20 text-sky-300 border-sky-500/40',
-                'Pending': 'bg-slate-800/80 text-slate-400 border-slate-700/60'
-            };
-
-            const colorClass = statusColors[data.status] || statusColors['Pending'];
-
-            return `
-                <div onclick="toggleTnAStatus('${styleId}', '${tnaKey}')" class="p-2 rounded-xl border ${colorClass} cursor-pointer transition-all hover:scale-105 select-none">
-                    <div class="text-[11px] font-semibold truncate">${label}</div>
-                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
-                        <span>${data.status}</span>
-                        <i class="fa-solid fa-rotate text-[9px]"></i>
-                    </div>
-                </div>
-            `;
+        function updateStyleField(styleId, field, value) {
+            const style = styles.find(s => s.id === styleId);
+            if (style) {
+                style[field] = value;
+                saveToStorage();
+            }
         }
 
-        function toggleTnAStatus(styleId, tnaKey) {
+        function addColorRow(styleId) {
             const style = styles.find(s => s.id === styleId);
-            if (!style) return;
+            if (style) {
+                if (!style.colors) style.colors = [];
+                if (style.colors.length < 10) {
+                    style.colors.push({ name: '', image: '', status: 'Labdip request', date: '12-Aug-2026' });
+                    saveToStorage();
+                    renderStyleList();
+                } else {
+                    alert('Maximum 10 colors allowed!');
+                }
+            }
+        }
 
-            if (!style.tna) style.tna = {};
-            if (!style.tna[tnaKey]) style.tna[tnaKey] = { status: 'Pending', date: '' };
+        function updateColorName(styleId, idx, val) {
+            const style = styles.find(s => s.id === styleId);
+            if (style && style.colors[idx]) {
+                style.colors[idx].name = val;
+                saveToStorage();
+            }
+        }
 
-            const statusCycle = ['Pending', 'Submitted', 'In-Progress', 'Approved'];
-            const currentIndex = statusCycle.indexOf(style.tna[tnaKey].status);
-            const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+        function updateColorStatus(styleId, idx, val) {
+            const style = styles.find(s => s.id === styleId);
+            if (style && style.colors[idx]) {
+                style.colors[idx].status = val;
+                saveToStorage();
+            }
+        }
 
-            style.tna[tnaKey].status = nextStatus;
-            saveToStorage();
-            renderStyleList();
+        function updateColorDate(styleId, idx, val) {
+            const style = styles.find(s => s.id === styleId);
+            if (style && style.colors[idx]) {
+                style.colors[idx].date = val;
+                saveToStorage();
+            }
         }
 
         function openNewStyleModal() {
@@ -1316,17 +1503,27 @@
                 image: document.getElementById('form-image-base64').value,
                 techpackName: document.getElementById('form-techpack-name').value,
                 techpackData: document.getElementById('form-techpack-data').value,
-                tna: existingIndex >= 0 && styles[existingIndex].tna ? styles[existingIndex].tna : {
-                    yarnApproval: { status: 'Pending', date: '' },
-                    labDip: { status: 'Pending', date: '' },
-                    fitSample: { status: 'Pending', date: '' },
-                    ppSample: { status: 'Pending', date: '' },
-                    bulkYarn: { status: 'Pending', date: '' },
-                    knitting: { status: 'Pending', date: '' },
-                    washing: { status: 'Pending', date: '' },
-                    inspection: { status: 'Pending', date: '' },
-                    shippingDocs: { status: 'Pending', date: '' }
-                }
+                buttonsZippers: existingIndex >= 0 ? styles[existingIndex].buttonsZippers : 'Yes',
+                knittingTime: existingIndex >= 0 ? styles[existingIndex].knittingTime : '40 mins',
+                linkingTime: existingIndex >= 0 ? styles[existingIndex].linkingTime : '20 mins',
+                finishingTime: existingIndex >= 0 ? styles[existingIndex].finishingTime : '15 mins',
+                weight: existingIndex >= 0 ? styles[existingIndex].weight : '300g',
+                destinationCountry: existingIndex >= 0 ? styles[existingIndex].destinationCountry : '',
+                destinationDepartment: existingIndex >= 0 ? styles[existingIndex].destinationDepartment : '',
+                colors: existingIndex >= 0 ? styles[existingIndex].colors : [],
+                fitSampleDate: '12-Aug-2026',
+                fitSampleStatus: 'Pending',
+                ppSampleDate: '12-Aug-2026',
+                ppSampleStatus: 'Pending',
+                productionFileStatus: 'Pending',
+                bulkYarnStatus: 'sample yarn',
+                pcsKnitting: 0,
+                pcsLinking: 0,
+                pcsFinishing: 0,
+                pcsWashing: 0,
+                pcsPacking: 0,
+                inspectionStatus: 'Pending',
+                shipmentStatus: 'Pending'
             };
 
             if (existingIndex >= 0) {
@@ -1360,7 +1557,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Pretty_Sweater_Styles_${new Date().toISOString().slice(0,10)}.csv`);
+            link.setAttribute("download", `Pretty_Sweaters_Ltd_Styles_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1371,10 +1568,10 @@
             const currentHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
 
             zip.file("index.html", currentHTML);
-            zip.file("README.txt", "Pretty Sweaters Limited - Merchandising Portal\nSingle-file runnable web app with English and Bangla support.");
+            zip.file("README.txt", "Pretty Sweaters Ltd - Merchandising Portal\nSingle-file runnable web app with English and Bangla support.");
 
             zip.generateAsync({ type: "blob" }).then(function (content) {
-                saveAs(content, "Pretty_Sweater_Merchandising_Portal.zip");
+                saveAs(content, "Pretty_Sweaters_Ltd_Merchandising_Portal.zip");
             });
         }
 
