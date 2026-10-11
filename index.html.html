@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="bn" class="h-full bg-slate-950"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretty Sweaters Limited - Merchandising Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- JSZip & FileSaver for downloading application as ZIP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 12px 30px -5px rgba(14, 165, 233, 0.25);
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        .glass-input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            border-color: #38bdf8;
+            outline: none;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+        }
+
+        /* Wall Calendar Binder Ring Styling */
+        .calendar-binder-ring {
+            width: 14px;
+            height: 28px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 50%, #475569 100%);
+            border-radius: 6px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.9), 0 6px 8px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -14px;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.7);
+        }
+
+        /* Glowing text & ambient lights */
+        .glow-text {
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.7);
+        }
+        .glow-emerald {
+            text-shadow: 0 0 16px rgba(52, 211, 153, 0.7);
+        }
+
+        /* Entrance keyframes for smooth UI dashboard rendering */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .animate-ambient-pulse {
+            animation: pulseGlow 6s infinite ease-in-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Inter, Hind Siliguri, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.-bottom-10{bottom:-2.5rem}.-left-24{left:-6rem}.-right-10{right:-2.5rem}.-top-24{top:-6rem}.left-0{left:0px}.left-1\/4{left:25%}.left-10{left:2.5rem}.left-2\/4{left:50%}.left-3\.5{left:0.875rem}.left-3\/4{left:75%}.right-0{right:0px}.right-10{right:2.5rem}.top-0{top:0px}.top-1\/2{top:50%}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mb-2\.5{margin-bottom:0.625rem}.mr-1{margin-right:0.25rem}.mb-3{margin-bottom:0.75rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-16{height:4rem}.h-2\.5{height:0.625rem}.h-48{height:12rem}.h-8{height:2rem}.h-96{height:24rem}.h-\[500px\]{height:500px}.h-full{height:100%}.h-2{height:0.5rem}.max-h-\[90vh\]{max-height:90vh}.min-h-\[220px\]{min-height:220px}.min-h-screen{min-height:100vh}.min-h-\[52px\]{min-height:52px}.w-12{width:3rem}.w-16{width:4rem}.w-2\.5{width:0.625rem}.w-48{width:12rem}.w-8{width:2rem}.w-96{width:24rem}.w-\[500px\]{width:500px}.w-full{width:100%}.w-2{width:0.5rem}.max-w-3xl{max-width:48rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.shrink-0{flex-shrink:0}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes bounce{0%, 100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,0.2,1)}}.animate-bounce{animation:bounce 1s infinite}@keyframes ping{75%, 100%{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0, 0, 0.2, 1) infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}@keyframes spin{to{transform:rotate(360deg)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-7{grid-template-columns:repeat(7, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-3\.5{gap:0.875rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.overflow-x-hidden{overflow-x:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-t-8{border-top-width:8px}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3)}.border-cyan-400\/30{border-color:rgb(34 211 238 / 0.3)}.border-emerald-500\/30{border-color:rgb(16 185 129 / 0.3)}.border-indigo-500\/30{border-color:rgb(99 102 241 / 0.3)}.border-rose-500\/20{border-color:rgb(244 63 94 / 0.2)}.border-sky-400\/30{border-color:rgb(56 189 248 / 0.3)}.border-sky-500\/30{border-color:rgb(14 165 233 / 0.3)}.border-sky-500\/40{border-color:rgb(14 165 233 / 0.4)}.border-slate-600\/50{border-color:rgb(71 85 105 / 0.5)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-slate-700\/50{border-color:rgb(51 65 85 / 0.5)}.border-slate-700\/60{border-color:rgb(51 65 85 / 0.6)}.border-slate-700\/80{border-color:rgb(51 65 85 / 0.8)}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8)}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4)}.border-amber-800\/40{border-color:rgb(146 64 14 / 0.4)}.border-emerald-500\/40{border-color:rgb(16 185 129 / 0.4)}.border-sky-400\/80{border-color:rgb(56 189 248 / 0.8)}.border-slate-800\/40{border-color:rgb(30 41 59 / 0.4)}.border-t-amber-800\/80{border-top-color:rgb(146 64 14 / 0.8)}.bg-amber-500\/20{background-color:rgb(245 158 11 / 0.2)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-500\/20{background-color:rgb(16 185 129 / 0.2)}.bg-indigo-500\/20{background-color:rgb(99 102 241 / 0.2)}.bg-indigo-600\/10{background-color:rgb(79 70 229 / 0.1)}.bg-rose-500\/10{background-color:rgb(244 63 94 / 0.1)}.bg-sky-500\/10{background-color:rgb(14 165 233 / 0.1)}.bg-sky-500\/20{background-color:rgb(14 165 233 / 0.2)}.bg-sky-600{--tw-bg-opacity:1;background-color:rgb(2 132 199 / var(--tw-bg-opacity, 1))}.bg-sky-600\/15{background-color:rgb(2 132 199 / 0.15)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-800\/80{background-color:rgb(30 41 59 / 0.8)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8)}.bg-slate-900\/90{background-color:rgb(15 23 42 / 0.9)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity, 1))}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8)}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-amber-950\/60{background-color:rgb(69 26 3 / 0.6)}.bg-slate-900\/20{background-color:rgb(15 23 42 / 0.2)}.bg-slate-900\/40{background-color:rgb(15 23 42 / 0.4)}.bg-slate-900\/50{background-color:rgb(15 23 42 / 0.5)}.bg-\[radial-gradient\(ellipse_at_top_right\2c _var\(--tw-gradient-stops\)\)\]{background-image:radial-gradient(ellipse at top right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right, var(--tw-gradient-stops))}.from-cyan-500{--tw-gradient-from:#06b6d4 var(--tw-gradient-from-position);--tw-gradient-to:rgb(6 182 212 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-sky-200{--tw-gradient-from:#bae6fd var(--tw-gradient-from-position);--tw-gradient-to:rgb(186 230 253 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-900{--tw-gradient-from:#0f172a var(--tw-gradient-from-position);--tw-gradient-to:rgb(15 23 42 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-amber-500\/20{--tw-gradient-from:rgb(245 158 11 / 0.2) var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 158 11 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-cyan-100{--tw-gradient-to:rgb(207 250 254 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #cffafe var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-indigo-950{--tw-gradient-to:rgb(30 27 75 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #1e1b4b var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-sky-500{--tw-gradient-to:rgb(14 165 233 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #0ea5e9 var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-blue-600{--tw-gradient-to:#2563eb var(--tw-gradient-to-position)}.to-slate-950{--tw-gradient-to:#020617 var(--tw-gradient-to-position)}.to-white{--tw-gradient-to:#fff var(--tw-gradient-to-position)}.to-orange-500\/20{--tw-gradient-to:rgb(249 115 22 / 0.2) var(--tw-gradient-to-position)}.bg-clip-text{-webkit-background-clip:text;background-clip:text}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-1\.5{padding:0.375rem}.p-8{padding:2rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-8{padding-left:2rem;padding-right:2rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.pb-3{padding-bottom:0.75rem}.pl-10{padding-left:2.5rem}.pr-4{padding-right:1rem}.pt-2{padding-top:0.5rem}.pt-4{padding-top:1rem}.pb-4{padding-bottom:1rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-sans{font-family:Inter, Hind Siliguri, sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[9px\]{font-size:9px}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-amber-300\/80{color:rgb(252 211 77 / 0.8)}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238 / var(--tw-text-opacity, 1))}.text-emerald-300\/80{color:rgb(110 231 183 / 0.8)}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-indigo-300\/80{color:rgb(165 180 252 / 0.8)}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248 / var(--tw-text-opacity, 1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133 / var(--tw-text-opacity, 1))}.text-sky-200\/90{color:rgb(186 230 253 / 0.9)}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.text-sky-300\/80{color:rgb(125 211 252 / 0.8)}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-sky-400\/80{color:rgb(56 189 248 / 0.8)}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-transparent{color:transparent}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-amber-200\/90{color:rgb(253 230 138 / 0.9)}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.placeholder-slate-400::placeholder{--tw-placeholder-opacity:1;color:rgb(148 163 184 / var(--tw-placeholder-opacity, 1))}.placeholder-slate-500::placeholder{--tw-placeholder-opacity:1;color:rgb(100 116 139 / var(--tw-placeholder-opacity, 1))}.opacity-20{opacity:0.2}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-cyan-500\/20{--tw-shadow-color:rgb(6 182 212 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-cyan-500\/25{--tw-shadow-color:rgb(6 182 212 / 0.25);--tw-shadow:var(--tw-shadow-colored)}.shadow-cyan-500\/30{--tw-shadow-color:rgb(6 182 212 / 0.3);--tw-shadow:var(--tw-shadow-colored)}.shadow-sky-500\/10{--tw-shadow-color:rgb(14 165 233 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.shadow-sky-500\/20{--tw-shadow-color:rgb(14 165 233 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.ring-2{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.ring-cyan-400\/30{--tw-ring-color:rgb(34 211 238 / 0.3)}.blur-3xl{--tw-blur:blur(64px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-500{transition-duration:500ms}.file\:mr-3::file-selector-button{margin-right:0.75rem}.file\:rounded-lg::file-selector-button{border-radius:0.5rem}.file\:border-0::file-selector-button{border-width:0px}.file\:bg-cyan-500\/20::file-selector-button{background-color:rgb(6 182 212 / 0.2)}.file\:bg-sky-500\/20::file-selector-button{background-color:rgb(14 165 233 / 0.2)}.file\:px-3::file-selector-button{padding-left:0.75rem;padding-right:0.75rem}.file\:py-1::file-selector-button{padding-top:0.25rem;padding-bottom:0.25rem}.file\:text-xs::file-selector-button{font-size:0.75rem;line-height:1rem}.file\:font-semibold::file-selector-button{font-weight:600}.file\:text-cyan-300::file-selector-button{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity, 1))}.file\:text-sky-300::file-selector-button{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-slate-600:hover{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity, 1))}.hover\:border-slate-700:hover{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.hover\:bg-rose-500\/20:hover{background-color:rgb(244 63 94 / 0.2)}.hover\:bg-sky-500:hover{--tw-bg-opacity:1;background-color:rgb(14 165 233 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-700\/80:hover{background-color:rgb(51 65 85 / 0.8)}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-800\/80:hover{background-color:rgb(30 41 59 / 0.8)}.hover\:from-cyan-400:hover{--tw-gradient-from:#22d3ee var(--tw-gradient-from-position);--tw-gradient-to:rgb(34 211 238 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.hover\:to-blue-500:hover{--tw-gradient-to:#3b82f6 var(--tw-gradient-to-position)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-rose-300:hover{--tw-text-opacity:1;color:rgb(253 164 175 / var(--tw-text-opacity, 1))}.hover\:text-sky-300:hover{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:rotate-180{--tw-rotate:180deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.sm\:text-5xl{font-size:3rem;line-height:1}}@media (min-width: 768px){.md\:w-96{width:24rem}.md\:w-auto{width:auto}.md\:grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}</style></head>
+<body class="h-full text-slate-100 font-sans bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-indigo-950 to-slate-950 min-h-screen custom-scrollbar relative overflow-x-hidden">
+
+    <!-- Ambient background blurred glow circles -->
+    <div class="fixed -top-24 -left-24 w-96 h-96 bg-sky-600/15 rounded-full blur-3xl pointer-events-none animate-ambient-pulse"></div>
+    <div class="fixed top-1/2 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none animate-ambient-pulse" style="animation-delay: 3s;"></div>
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-700/50 px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Brand Logo & Title -->
+            <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/30">
+                    <i class="fa-solid fa-shirt text-2xl animate-bounce" style="animation-duration: 3s;"></i>
+                </div>
+                <div>
+                    <h1 id="i18n-company-title" class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-200 via-cyan-100 to-white">Priti Sweater Limited</h1>
+                    <p id="i18n-company-subtitle" class="text-xs text-sky-300/80 font-medium tracking-wide">Priti Sweater Limited • Merchandising Management System</p>
+                </div>
+            </div>
+
+            <!-- Header Actions & Language Switcher -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Interactive Bilingual Language Switcher Toggle Button -->
+                <button onclick="toggleLanguage()" class="px-4 py-2 text-xs font-bold bg-slate-900/90 hover:bg-slate-800 text-sky-300 border border-sky-500/40 rounded-xl shadow-lg shadow-sky-500/10 transition-all flex items-center gap-2.5 group active:scale-95">
+                    <i class="fa-solid fa-globe text-cyan-400 text-sm group-hover:rotate-180 transition-transform duration-500"></i>
+                    <span id="lang-toggle-text">Language: বাংলা</span>
+                    <span class="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.5 rounded border border-sky-400/30">EN/BN</span>
+                </button>
+
+                <!-- Add New Style Button -->
+                <button onclick="openNewStyleModal()" class="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-xl shadow-lg shadow-cyan-500/25 transition-all flex items-center gap-2 active:scale-95 border border-cyan-400/30">
+                    <i class="fa-solid fa-plus text-sm"></i> <span id="i18n-btn-add-style">Add New Style</span>
+                </button>
+
+                <!-- Excel Export -->
+                <button onclick="exportStylesCSV()" class="px-3.5 py-2 text-xs font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 rounded-xl transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-excel text-emerald-400"></i> <span id="i18n-btn-excel">Excel Export</span>
+                </button>
+
+                <!-- ZIP Download -->
+                <button onclick="downloadZipApp()" class="px-3.5 py-2 text-xs font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 rounded-xl transition-all flex items-center gap-1.5" title="Download Full Project Source as ZIP">
+                    <i class="fa-solid fa-file-zipper text-sky-400"></i> <span id="i18n-btn-zip">App ZIP</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- Top Row: Animated Digital Clock & Wall Paper Calendar -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Real-time Digital Clock Widget -->
+            <div class="lg:col-span-5 flex flex-col justify-between glass-panel rounded-2xl p-6 relative overflow-hidden animate-fade-in-up stagger-1">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-4">
+                        <span class="text-xs font-semibold tracking-wider text-sky-400 uppercase flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> <span id="i18n-live-clock-label">Digital Live Clock</span>
+                        </span>
+                        <span id="current-timezone-badge" class="text-[11px] bg-slate-900/80 text-sky-300 px-2.5 py-1 rounded-lg border border-slate-700/80 font-mono">BST (+06)</span>
+                    </div>
+
+                    <!-- Clock Display -->
+                    <div class="text-center py-4">
+                        <div id="digital-clock" class="text-4xl sm:text-5xl font-mono font-extrabold text-white tracking-widest glow-text">11:43:30 PM</div>
+                        <div id="digital-date" class="text-base text-sky-200/90 font-medium mt-2">Sunday, October 11, 2026</div>
+                    </div>
+                </div>
+
+                <!-- Clock Dynamic Stats -->
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-700/60">
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div id="i18n-active-orders-label" class="text-xs text-slate-400">Active Styles</div>
+                        <div id="quick-active-orders" class="text-2xl font-bold text-sky-400 mt-1">2</div>
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div id="i18n-upcoming-ship-label" class="text-xs text-slate-400">Upcoming Shipments</div>
+                        <div id="quick-upcoming-ship" class="text-2xl font-bold text-amber-400 mt-1">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-6 relative border-t-8 border-t-amber-800/80 animate-fade-in-up stagger-2">
+                <!-- Wall Hanging Ring Binding Graphics -->
+                <div class="flex justify-between px-8 absolute top-0 left-0 right-0">
+                    <div class="calendar-binder-ring left-10"></div>
+                    <div class="calendar-binder-ring left-1/4"></div>
+                    <div class="calendar-binder-ring left-2/4"></div>
+                    <div class="calendar-binder-ring left-3/4"></div>
+                    <div class="calendar-binder-ring right-10"></div>
+                </div>
+
+                <!-- Calendar Header Navigation -->
+                <div class="flex items-center justify-between mb-4 pt-2">
+                    <div>
+                        <h2 id="calendar-month-year" class="text-xl font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-sky-400"></i> <span id="calendar-month-title">October 2026</span>
+                        </h2>
+                        <p id="i18n-calendar-desc" class="text-xs text-slate-400">Hanging Wall Calendar • Click any date to add notes</p>
+                    </div>
+
+                    <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                        <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button onclick="resetToCurrentMonth()" class="px-2 py-1 text-xs font-semibold text-sky-400 hover:bg-slate-800 rounded-lg transition-all">
+                            <span id="i18n-cal-today">Today</span>
+                        </button>
+                        <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calendar Days Header -->
+                <div id="calendar-days-header" class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-sky-300 mb-2 py-1 bg-slate-900/60 rounded-lg border border-slate-800/80">
+                <div class="text-rose-400">Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div class="text-amber-400">Sat</div>
+            </div>
+
+                <!-- Calendar Grid -->
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 min-h-[220px]"><div class="bg-slate-900/20 rounded-xl border border-slate-800/40 p-1 opacity-20"></div><div class="bg-slate-900/20 rounded-xl border border-slate-800/40 p-1 opacity-20"></div><div class="bg-slate-900/20 rounded-xl border border-slate-800/40 p-1 opacity-20"></div><div class="bg-slate-900/20 rounded-xl border border-slate-800/40 p-1 opacity-20"></div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">1</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">2</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">3</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">4</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">5</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">6</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">7</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">8</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">9</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">10</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-sky-500/20 border-sky-400/80 shadow-md shadow-sky-500/20">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-sky-300 glow-text">11</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">12</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">13</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">14</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">15</span>
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    </div>
+                    <div class="text-[10px] text-amber-200/90 truncate mt-1 bg-amber-950/60 px-1 py-0.5 rounded border border-amber-800/40">Yarn delivery PSL-7740</div>
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">16</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">17</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">18</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">19</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">20</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">21</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">22</span>
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    </div>
+                    <div class="text-[10px] text-amber-200/90 truncate mt-1 bg-amber-950/60 px-1 py-0.5 rounded border border-amber-800/40">PP Sample Fitting</div>
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">23</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">24</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">25</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">26</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">27</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">28</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">29</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">30</span>
+                        
+                    </div>
+                    
+                </div><div class="min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">31</span>
+                        
+                    </div>
+                    
+                </div></div>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Active Styles -->
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-4 animate-fade-in-up stagger-1">
+                <div class="w-12 h-12 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                    <div id="i18n-kpi-1-label" class="text-xs font-medium text-slate-400">Total Active Styles</div>
+                    <div id="kpi-total-styles" class="text-2xl font-bold text-white mt-0.5">2</div>
+                    <div id="i18n-kpi-1-sub" class="text-[11px] text-sky-400/80 mt-0.5">Total Styles in Pipeline</div>
+                </div>
+            </div>
+
+            <!-- Total Order Quantity -->
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-4 animate-fade-in-up stagger-2">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-boxes-packing"></i>
+                </div>
+                <div>
+                    <div id="i18n-kpi-2-label" class="text-xs font-medium text-slate-400">Total Order Quantity</div>
+                    <div id="kpi-total-qty" class="text-2xl font-bold text-white mt-0.5">2,222 Pcs</div>
+                    <div id="i18n-kpi-2-sub" class="text-[11px] text-indigo-300/80 mt-0.5">Total Quantity (Pcs)</div>
+                </div>
+            </div>
+
+            <!-- Total Order Value -->
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-4 animate-fade-in-up stagger-3">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                </div>
+                <div>
+                    <div id="i18n-kpi-3-label" class="text-xs font-medium text-slate-400">Total Shipment Value</div>
+                    <div id="kpi-total-value" class="text-2xl font-bold text-emerald-400 mt-0.5">$11,110.00</div>
+                    <div id="i18n-kpi-3-sub" class="text-[11px] text-emerald-300/80 mt-0.5">FOB Total ($ USD)</div>
+                </div>
+            </div>
+
+            <!-- Pending Approvals -->
+            <div class="glass-card rounded-2xl p-4 flex items-center gap-4 animate-fade-in-up stagger-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <div id="i18n-kpi-4-label" class="text-xs font-medium text-slate-400">Pending Approvals</div>
+                    <div id="kpi-pending-approvals" class="text-2xl font-bold text-amber-400 mt-0.5">17</div>
+                    <div id="i18n-kpi-4-sub" class="text-[11px] text-amber-300/80 mt-0.5">Fit, PP, Yarn &amp; Samples</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in-up">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="search-input" oninput="renderStyleList()" placeholder="Search by Style No, Buyer, or Yarn..." class="w-full glass-input pl-10 pr-4 py-2 rounded-xl text-sm placeholder-slate-400">
+            </div>
+
+            <!-- Filter Dropdowns -->
+            <div class="flex items-center gap-3 w-full md:w-auto flex-wrap">
+                <!-- Status Filter -->
+                <select id="filter-status" onchange="renderStyleList()" class="glass-input px-3.5 py-2 rounded-xl text-sm bg-slate-900 border-slate-700">
+                    <option value="ALL">সকল স্ট্যাটাস (All Status)</option>
+                    <option value="Yarn Booking">Yarn Booking</option>
+                    <option value="Lab Dip">Lab Dip</option>
+                    <option value="Fit Sample">Fit Sample</option>
+                    <option value="PP Sample">PP Sample</option>
+                    <option value="Knitting/Production">Knitting/Production</option>
+                    <option value="Washing &amp; Finishing">Washing &amp; Finishing</option>
+                    <option value="Packing">Packing</option>
+                    <option value="Shipped">Shipped</option>
+                </select>
+
+                <!-- Gauge Filter -->
+                <select id="filter-gauge" onchange="renderStyleList()" class="glass-input px-3.5 py-2 rounded-xl text-sm bg-slate-900 border-slate-700">
+                    <option value="ALL">সকল গেজ (All Gauge)</option>
+                    <option value="3GG">3 Gauge (GG)</option>
+                    <option value="5GG">5 Gauge (GG)</option>
+                    <option value="7GG">7 Gauge (GG)</option>
+                    <option value="12GG">12 Gauge (GG)</option>
+                    <option value="14GG">14 Gauge (GG)</option>
+                </select>
+
+                <button onclick="resetFilters()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all" title="Reset Filters">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 id="i18n-styles-master-title" class="text-lg font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-list-check text-cyan-400"></i> Sweater Order &amp; Shipment Tracker</h3>
+                <span id="styles-count-badge" class="text-xs bg-sky-500/20 text-sky-300 border border-sky-500/30 px-3 py-1 rounded-full">2 Styles Displayed</span>
+            </div>
+
+            <!-- Styles Dynamic Animated Card List -->
+            <div id="styles-container" class="space-y-4"><div class="glass-panel rounded-2xl p-5 border border-slate-700/60 space-y-4 hover:border-slate-600 transition-all animate-fade-in-up">
+                    <!-- Header -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-shirt text-2xl text-slate-600"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="text-lg font-extrabold text-white tracking-wide">2026-1-134</h4>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-full">12GG</span>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 rounded-full"><i class="fa-solid fa-user-tag text-xs mr-1 text-slate-400"></i>C&amp;A BRAZIL MENS</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1"><i class="fa-solid fa-scroll text-slate-400 mr-1"></i> 100% BCI COTTON 2/32 </p>
+                            </div>
+                        </div>
+
+                        <!-- Status & Controls -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
+                                <i class="fa-solid fa-spinner animate-spin text-[10px] mr-1"></i> PP Sample
+                            </span>
+                            <button onclick="editStyle('style_1791740542526')" class="p-2 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-all" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteStyle('style_1791740542526')" class="p-2 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-all" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800 text-xs">
+                        <div>
+                            <span class="text-slate-400 block">Order Quantity:</span>
+                            <span class="font-bold text-white text-sm">1,111 Pcs</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">FOB Price:</span>
+                            <span class="font-bold text-emerald-400 text-sm">$5.00</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Total Value:</span>
+                            <span class="font-bold text-emerald-300 text-sm">$5,555.00</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Shipment Date:</span>
+                            <span class="font-bold text-sky-300 text-sm">2026-12-10</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech Pack Attachment Link -->
+                    <div class="flex items-center justify-between text-xs bg-slate-900/60 px-3.5 py-2 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-rose-400 text-sm"></i>
+                            Tech Pack File: <strong class="text-slate-200 font-medium">No PDF Attached</strong>
+                        </span>
+                        <span class="text-slate-500">N/A</span>
+                    </div>
+
+                    <!-- Time & Action Steps -->
+                    <div class="pt-2">
+                        <div class="text-xs font-bold text-sky-300 mb-2.5 flex items-center gap-2">
+                            <i class="fa-solid fa-timeline"></i> Time &amp; Action (T&amp;A) Critical Path:
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'yarnApproval')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">1. Yarn Booking</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'labDip')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">2. Lab Dip Approved</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'fitSample')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">3. Fit Sample</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'ppSample')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">4. PP Sample</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'bulkYarn')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">5. Bulk Yarn In-house</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'knitting')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">6. Knitting &amp; Linking</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'washing')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">7. Washing &amp; Finish</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'inspection')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">8. FRI Inspection</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740542526', 'shippingDocs')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">9. Shipping Docs</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                        </div>
+                    </div>
+                </div><div class="glass-panel rounded-2xl p-5 border border-slate-700/60 space-y-4 hover:border-slate-600 transition-all animate-fade-in-up">
+                    <!-- Header -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-shirt text-2xl text-slate-600"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="text-lg font-extrabold text-white tracking-wide">2025-1-3675</h4>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-full">12GG</span>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 rounded-full"><i class="fa-solid fa-user-tag text-xs mr-1 text-slate-400"></i>C&amp;A BRAZIL MENS</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1"><i class="fa-solid fa-scroll text-slate-400 mr-1"></i> 100 BCI COTTON 2/32</p>
+                            </div>
+                        </div>
+
+                        <!-- Status & Controls -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
+                                <i class="fa-solid fa-spinner animate-spin text-[10px] mr-1"></i> PP Sample
+                            </span>
+                            <button onclick="editStyle('style_1791740433175')" class="p-2 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-all" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteStyle('style_1791740433175')" class="p-2 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-all" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800 text-xs">
+                        <div>
+                            <span class="text-slate-400 block">Order Quantity:</span>
+                            <span class="font-bold text-white text-sm">1,111 Pcs</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">FOB Price:</span>
+                            <span class="font-bold text-emerald-400 text-sm">$5.00</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Total Value:</span>
+                            <span class="font-bold text-emerald-300 text-sm">$5,555.00</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Shipment Date:</span>
+                            <span class="font-bold text-sky-300 text-sm">2026-10-11</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech Pack Attachment Link -->
+                    <div class="flex items-center justify-between text-xs bg-slate-900/60 px-3.5 py-2 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-rose-400 text-sm"></i>
+                            Tech Pack File: <strong class="text-slate-200 font-medium">No PDF Attached</strong>
+                        </span>
+                        <span class="text-slate-500">N/A</span>
+                    </div>
+
+                    <!-- Time & Action Steps -->
+                    <div class="pt-2">
+                        <div class="text-xs font-bold text-sky-300 mb-2.5 flex items-center gap-2">
+                            <i class="fa-solid fa-timeline"></i> Time &amp; Action (T&amp;A) Critical Path:
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'yarnApproval')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">1. Yarn Booking</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'labDip')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">2. Lab Dip Approved</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'fitSample')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">3. Fit Sample</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'ppSample')" class="p-2 rounded-xl border bg-emerald-500/20 text-emerald-300 border-emerald-500/40 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">4. PP Sample</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Approved</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'bulkYarn')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">5. Bulk Yarn In-house</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'knitting')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">6. Knitting &amp; Linking</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'washing')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">7. Washing &amp; Finish</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'inspection')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">8. FRI Inspection</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                            
+                <div onclick="toggleTnAStatus('style_1791740433175', 'shippingDocs')" class="p-2 rounded-xl border bg-slate-800/80 text-slate-400 border-slate-700/60 cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">9. Shipping Docs</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>Pending</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            
+                        </div>
+                    </div>
+                </div></div>
+        </div>
+
+    </main>
+
+    <div id="style-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-3xl rounded-2xl border border-slate-700 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-in-up">
+
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-slate-700/80 flex items-center justify-between bg-slate-900/80">
+                <h3 id="modal-title" class="text-lg font-bold text-white flex items-center gap-2">নতুন স্টাইল যুক্ত করুন</h3>
+                <button onclick="closeStyleModal()" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <form id="style-form" onsubmit="handleStyleSubmit(event)" class="p-6 overflow-y-auto custom-scrollbar space-y-4">
+                <input type="hidden" id="form-style-id" value="">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Style No -->
+                    <div>
+                        <label id="i18n-lbl-styleno" class="block text-xs font-semibold text-slate-300 mb-1">Style Number *</label>
+                        <input type="text" id="form-style-no" required="" placeholder="Ex: PSL-2026-889" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Buyer Name -->
+                    <div>
+                        <label id="i18n-lbl-buyer" class="block text-xs font-semibold text-slate-300 mb-1">Buyer Name *</label>
+                        <input type="text" id="form-buyer" required="" placeholder="Ex: H&amp;M, Zara, AEO" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Gauge (GG) -->
+                    <div>
+                        <label id="i18n-lbl-gauge" class="block text-xs font-semibold text-slate-300 mb-1">Gauge (GG) *</label>
+                        <select id="form-gauge" required="" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm bg-slate-900">
+                            <option value="12GG">12 GG (Standard Fine)</option>
+                            <option value="7GG">7 GG (Medium Gauge)</option>
+                            <option value="5GG">5 GG (Chunky)</option>
+                            <option value="3GG">3 GG (Heavy Knit)</option>
+                            <option value="14GG">14 GG (Ultra Fine)</option>
+                        </select>
+                    </div>
+
+                    <!-- Yarn Type -->
+                    <div>
+                        <label id="i18n-lbl-yarn" class="block text-xs font-semibold text-slate-300 mb-1">Yarn Type &amp; Composition *</label>
+                        <input type="text" id="form-yarn" required="" placeholder="Ex: 100% Cotton 2/28s, Acrylic Blend" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Quantity -->
+                    <div>
+                        <label id="i18n-lbl-qty" class="block text-xs font-semibold text-slate-300 mb-1">Order Quantity (Pcs) *</label>
+                        <input type="number" id="form-quantity" required="" min="1" placeholder="Ex: 12000" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- FOB Price -->
+                    <div>
+                        <label id="i18n-lbl-fob" class="block text-xs font-semibold text-slate-300 mb-1">FOB Price ($ / Pc) *</label>
+                        <input type="number" step="0.01" id="form-fob" required="" placeholder="Ex: 8.50" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Order Date -->
+                    <div>
+                        <label id="i18n-lbl-orderdate" class="block text-xs font-semibold text-slate-300 mb-1">Order Received Date *</label>
+                        <input type="date" id="form-order-date" required="" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+
+                    <!-- Shipment Date -->
+                    <div>
+                        <label id="i18n-lbl-shipdate" class="block text-xs font-semibold text-slate-300 mb-1">Shipment Date *</label>
+                        <input type="date" id="form-ship-date" required="" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <!-- Status & Attachments -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-700/60">
+                    <div>
+                        <label id="i18n-lbl-status" class="block text-xs font-semibold text-slate-300 mb-1">Current Stage *</label>
+                        <select id="form-status" class="w-full glass-input px-3.5 py-2 rounded-xl text-sm bg-slate-900">
+                            <option value="Yarn Booking">Yarn Booking</option>
+                            <option value="Lab Dip">Lab Dip</option>
+                            <option value="Fit Sample">Fit Sample</option>
+                            <option value="PP Sample">PP Sample</option>
+                            <option value="Knitting/Production">Knitting/Production</option>
+                            <option value="Washing &amp; Finishing">Washing &amp; Finishing</option>
+                            <option value="Packing">Packing</option>
+                            <option value="Shipped">Shipped</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label id="i18n-lbl-img" class="block text-xs font-semibold text-slate-300 mb-1">Style Image / Sketch</label>
+                        <input type="file" id="form-image" accept="image/*" onchange="handleImagePreview(event)" class="w-full glass-input px-3 py-1.5 rounded-xl text-xs text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-500/20 file:text-sky-300">
+                        <input type="hidden" id="form-image-base64" value="">
+                    </div>
+                </div>
+
+                <!-- Tech Pack Upload -->
+                <div>
+                    <label id="i18n-lbl-techpack" class="block text-xs font-semibold text-slate-300 mb-1">Tech Pack PDF Upload</label>
+                    <input type="file" id="form-techpack" accept=".pdf,image/*" onchange="handleTechpackFile(event)" class="w-full glass-input px-3 py-1.5 rounded-xl text-xs text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300">
+                    <input type="hidden" id="form-techpack-name" value="">
+                    <input type="hidden" id="form-techpack-data" value="">
+                </div>
+
+                <!-- Image Preview -->
+                <div id="image-preview-container" class="hidden mt-2 p-2 bg-slate-900/60 rounded-xl border border-slate-800 flex items-center gap-3">
+                    <img id="image-preview" class="w-16 h-16 object-cover rounded-lg border border-slate-700">
+                    <span id="i18n-img-ready" class="text-xs text-slate-400">Image Ready</span>
+                </div>
+
+                <!-- Form Submit Buttons -->
+                <div class="pt-4 flex justify-end gap-3 border-t border-slate-700/80">
+                    <button type="button" onclick="closeStyleModal()" class="px-4 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all">
+                        <span id="i18n-btn-cancel">Cancel</span>
+                    </button>
+                    <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-xl shadow-lg shadow-cyan-500/20 transition-all">
+                        <span id="i18n-btn-save">Save Style</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div id="calendar-note-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-md rounded-2xl border border-slate-700 p-6 space-y-4 animate-fade-in-up">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <h4 id="calendar-note-date-title" class="text-base font-bold text-white flex items-center gap-2">তারিখের নোট যুক্ত করুন (2026-10-12)</h4>
+                <button onclick="closeCalendarNoteModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <input type="hidden" id="calendar-note-date-key" value="2026-10-12">
+            <textarea id="calendar-note-text" rows="3" placeholder="Ex: Yarn delivery, Lab Dip deadline..." class="w-full glass-input p-3 rounded-xl text-sm placeholder-slate-500"></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="deleteCalendarNote()" class="px-3 py-1.5 text-xs text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-xl transition-all">
+                    <span id="i18n-btn-delete-note">Delete Note</span>
+                </button>
+                <button onclick="saveCalendarNote()" class="px-4 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl transition-all">
+                    <span id="i18n-btn-save-note">Save Note</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = localStorage.getItem('priti_app_lang') || 'BN';
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBNSZN8Xud3MDtP-1JujurZjp2Wm3EBDCs",
+    authDomain: "merch-calendar-59467.firebaseapp.com",
+    databaseURL: "https://merch-calendar-59467-default-rtdb.firebaseio.com",
+    projectId: "merch-calendar-59467",
+    storageBucket: "merch-calendar-59467.firebasestorage.app",
+    messagingSenderId: "291416023418",
+    appId: "1:291416023418:web:8798be470882e72087f6c3"
+  };
+
+  // Initialize Firebase (Compat mode)
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  // আপনার আগের কোড
+  let currentLang = localStorage.getItem('priti_app_lang') || 'BN';
+        const i18n = {
+            BN: {
+                companyTitle: "প্রীতি সোয়েটার লিমিটেড",
+                companySubtitle: "প্রীতি সোয়েটার লিমিটেড • মার্চেন্ডাইজিং পোর্টাল",
+                btnAddStyle: "নতুন স্টাইল যুক্ত করুন",
+                btnExcel: "Excel",
+                btnZip: "App ZIP",
+                liveClockLabel: "ডিজিটাল লাইভ ক্লক",
+                activeOrdersLabel: "সক্রিয় স্টাইল (Active Styles)",
+                upcomingShipLabel: "আসন্ন শিপমেন্ট (Upcoming)",
+                calDesc: "ওয়াল হ্যাঙ্গিং ক্যালেন্ডার • তারিখ ক্লিক করে নোট যোগ করুন",
+                calToday: "আজ",
+                kpi1Label: "মোট একটিভ স্টাইল",
+                kpi1Sub: "Total Active Styles",
+                kpi2Label: "মোট অর্ডার পরিমাণ (Pcs)",
+                kpi2Sub: "Total Order Quantity",
+                kpi3Label: "মোট অর্ডারের মূল্য ($)",
+                kpi3Sub: "Total Order FOB Value",
+                kpi4Label: "পেন্ডিং এপ্রুভাল",
+                kpi4Sub: "Pending Approvals",
+                searchPlaceholder: "স্টাইল নং, বায়ার বা সুতার নাম দিয়ে খুঁজুন...",
+                stylesMasterTitle: "সোয়েটার অর্ডার ও শিপমেন্ট ট্র্যাকার (Master Tracker)",
+                stylesCountSuffix: "টি স্টাইল প্রদর্শিত",
+                modalTitleAdd: "নতুন স্টাইল যুক্ত করুন",
+                modalTitleEdit: "স্টাইল এডিট করুন (Edit Style)",
+                lblStyleNo: "স্টাইল নম্বর (Style No) *",
+                lblBuyer: "বায়ার (Buyer Name) *",
+                lblGauge: "গেজ (Gauge/GG) *",
+                lblYarn: "সুতার টাইপ ও কম্পোজিশন (Yarn Type) *",
+                lblQty: "অর্ডার পরিমাণ (Quantity - Pcs) *",
+                lblFob: "FOB মূল্য ($ / Pc) *",
+                lblOrderDate: "অর্ডার ডেট (Order Received) *",
+                lblShipDate: "শিপমেন্ট ডেট (Shipment Date) *",
+                lblStatus: "বর্তমান স্ট্যাটাস (Current Stage)",
+                lblImg: "সোয়েটারের ছবি (Style Image / Sketch)",
+                lblTechpack: "টেক প্যাক পিডিএফ আপলোড (Tech Pack File)",
+                imgReady: "ছবি প্রস্তুত রয়েছে",
+                btnCancel: "বাতিল",
+                btnSave: "সংরক্ষণ করুন (Save Style)",
+                calNoteTitle: "তারিখের নোট যুক্ত করুন",
+                btnDeleteNote: "মুছে ফেলুন",
+                btnSaveNote: "সেভ করুন",
+                orderQtyText: "অর্ডার পরিমাণ:",
+                fobPriceText: "FOB মূল্য:",
+                totalValText: "মোট মূল্য:",
+                shipDateText: "শিপমেন্ট ডেট:",
+                techpackLabel: "টেক প্যাক (Tech Pack):",
+                noTechpack: "কোন পিডিএফ নেই",
+                downloadText: "ডাউনলোড",
+                tnaTitle: "টাইম এন্ড অ্যাকশন (T&A) ট্র্যাকিং:",
+                days: ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'],
+                months: ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'],
+                daysFull: ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'],
+                tnaSteps: {
+                    yarnApproval: '১. সুতা বুকিং (Yarn Booking)',
+                    labDip: '২. ল্যাব ডিপ (Lab Dip)',
+                    fitSample: '৩. ফিট স্যাম্পল (Fit Sample)',
+                    ppSample: '৪. পিপি স্যাম্পল (PP Sample)',
+                    bulkYarn: '৫. বাল্ক সুতা ইন-হাউস',
+                    knitting: '৬. নিটিং ও লিংকিং',
+                    washing: '৭. ওয়াশিং ও ফিনিশিং',
+                    inspection: '৮. এফআরআই ইন্সপেকশন',
+                    shippingDocs: '৯. শিপিং ডকুমেন্টস'
+                }
+            },
+            EN: {
+                companyTitle: "Priti Sweater Limited",
+                companySubtitle: "Priti Sweater Limited • Merchandising Management System",
+                btnAddStyle: "Add New Style",
+                btnExcel: "Excel Export",
+                btnZip: "App ZIP",
+                liveClockLabel: "Digital Live Clock",
+                activeOrdersLabel: "Active Styles",
+                upcomingShipLabel: "Upcoming Shipments",
+                calDesc: "Hanging Wall Calendar • Click any date to add notes",
+                calToday: "Today",
+                kpi1Label: "Total Active Styles",
+                kpi1Sub: "Total Styles in Pipeline",
+                kpi2Label: "Total Order Quantity",
+                kpi2Sub: "Total Quantity (Pcs)",
+                kpi3Label: "Total Shipment Value",
+                kpi3Sub: "FOB Total ($ USD)",
+                kpi4Label: "Pending Approvals",
+                kpi4Sub: "Fit, PP, Yarn & Samples",
+                searchPlaceholder: "Search by Style No, Buyer, or Yarn...",
+                stylesMasterTitle: "Sweater Order & Shipment Tracker",
+                stylesCountSuffix: "Styles Displayed",
+                modalTitleAdd: "Add New Style",
+                modalTitleEdit: "Edit Style Details",
+                lblStyleNo: "Style Number *",
+                lblBuyer: "Buyer Name *",
+                lblGauge: "Gauge (GG) *",
+                lblYarn: "Yarn Type & Composition *",
+                lblQty: "Order Quantity (Pcs) *",
+                lblFob: "FOB Price ($ / Pc) *",
+                lblOrderDate: "Order Received Date *",
+                lblShipDate: "Shipment Date *",
+                lblStatus: "Current Stage *",
+                lblImg: "Style Image / Sketch",
+                lblTechpack: "Tech Pack PDF Upload",
+                imgReady: "Image Ready",
+                btnCancel: "Cancel",
+                btnSave: "Save Style",
+                calNoteTitle: "Add Date Note",
+                btnDeleteNote: "Delete Note",
+                btnSaveNote: "Save Note",
+                orderQtyText: "Order Quantity:",
+                fobPriceText: "FOB Price:",
+                totalValText: "Total Value:",
+                shipDateText: "Shipment Date:",
+                techpackLabel: "Tech Pack File:",
+                noTechpack: "No PDF Attached",
+                downloadText: "Download",
+                tnaTitle: "Time & Action (T&A) Critical Path:",
+                days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                daysFull: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                tnaSteps: {
+                    yarnApproval: '1. Yarn Booking',
+                    labDip: '2. Lab Dip Approved',
+                    fitSample: '3. Fit Sample',
+                    ppSample: '4. PP Sample',
+                    bulkYarn: '5. Bulk Yarn In-house',
+                    knitting: '6. Knitting & Linking',
+                    washing: '7. Washing & Finish',
+                    inspection: '8. FRI Inspection',
+                    shippingDocs: '9. Shipping Docs'
+                }
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'BN' ? 'EN' : 'BN';
+            localStorage.setItem('priti_app_lang', currentLang);
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            const lang = i18n[currentLang];
+
+            // Header elements
+            document.getElementById('lang-toggle-text').innerText = `Language: ${currentLang === 'BN' ? 'English' : 'বাংলা'}`;
+            document.getElementById('i18n-company-title').innerText = lang.companyTitle;
+            document.getElementById('i18n-company-subtitle').innerText = lang.companySubtitle;
+            document.getElementById('i18n-btn-add-style').innerText = lang.btnAddStyle;
+            document.getElementById('i18n-btn-excel').innerText = lang.btnExcel;
+            document.getElementById('i18n-btn-zip').innerText = lang.btnZip;
+
+            // Widget & Clock labels
+            document.getElementById('i18n-live-clock-label').innerText = lang.liveClockLabel;
+            document.getElementById('i18n-active-orders-label').innerText = lang.activeOrdersLabel;
+            document.getElementById('i18n-upcoming-ship-label').innerText = lang.upcomingShipLabel;
+            document.getElementById('i18n-calendar-desc').innerText = lang.calDesc;
+            document.getElementById('i18n-cal-today').innerText = lang.calToday;
+
+            // KPIs
+            document.getElementById('i18n-kpi-1-label').innerText = lang.kpi1Label;
+            document.getElementById('i18n-kpi-1-sub').innerText = lang.kpi1Sub;
+            document.getElementById('i18n-kpi-2-label').innerText = lang.kpi2Label;
+            document.getElementById('i18n-kpi-2-sub').innerText = lang.kpi2Sub;
+            document.getElementById('i18n-kpi-3-label').innerText = lang.kpi3Label;
+            document.getElementById('i18n-kpi-3-sub').innerText = lang.kpi3Sub;
+            document.getElementById('i18n-kpi-4-label').innerText = lang.kpi4Label;
+            document.getElementById('i18n-kpi-4-sub').innerText = lang.kpi4Sub;
+
+            // Search
+            document.getElementById('search-input').placeholder = lang.searchPlaceholder;
+            document.getElementById('i18n-styles-master-title').innerHTML = `<i class="fa-solid fa-list-check text-cyan-400"></i> ${lang.stylesMasterTitle}`;
+
+            // Modal Labels
+            document.getElementById('i18n-modal-title').innerText = lang.modalTitleAdd;
+            document.getElementById('i18n-lbl-styleno').innerText = lang.lblStyleNo;
+            document.getElementById('i18n-lbl-buyer').innerText = lang.lblBuyer;
+            document.getElementById('i18n-lbl-gauge').innerText = lang.lblGauge;
+            document.getElementById('i18n-lbl-yarn').innerText = lang.lblYarn;
+            document.getElementById('i18n-lbl-qty').innerText = lang.lblQty;
+            document.getElementById('i18n-lbl-fob').innerText = lang.lblFob;
+            document.getElementById('i18n-lbl-orderdate').innerText = lang.lblOrderDate;
+            document.getElementById('i18n-lbl-shipdate').innerText = lang.lblShipDate;
+            document.getElementById('i18n-lbl-status').innerText = lang.lblStatus;
+            document.getElementById('i18n-lbl-img').innerText = lang.lblImg;
+            document.getElementById('i18n-lbl-techpack').innerText = lang.lblTechpack;
+            document.getElementById('i18n-img-ready').innerText = lang.imgReady;
+            document.getElementById('i18n-btn-cancel').innerText = lang.btnCancel;
+            document.getElementById('i18n-btn-save').innerText = lang.btnSave;
+            document.getElementById('i18n-cal-note-title').innerText = lang.calNoteTitle;
+            document.getElementById('i18n-btn-delete-note').innerText = lang.btnDeleteNote;
+            document.getElementById('i18n-btn-save-note').innerText = lang.btnSaveNote;
+
+            // Re-render Clock, Calendar Header, & Style List
+            updateDigitalClock();
+            renderCalendarDaysHeader();
+            renderCalendar();
+            renderStyleList();
+        }
+
+        const STORAGE_KEY_STYLES = 'priti_sweater_styles_v3';
+        const STORAGE_KEY_NOTES = 'priti_sweater_calendar_notes_v3';
+
+        const initialSampleStyles = [
+            {
+                id: 'style_101',
+                styleNo: 'PSL-7740',
+                buyer: 'H&M Sweden',
+                gauge: '12GG',
+                yarn: '100% Cotton 2/28s Corespun',
+                quantity: 15000,
+                fob: 7.80,
+                orderDate: '2026-09-15',
+                shipDate: '2026-11-20',
+                status: 'Fit Sample',
+                image: '',
+                techpackName: 'HM_PSL-7740_TechPack.pdf',
+                techpackData: '',
+                tna: {
+                    yarnApproval: { status: 'Approved', date: '2026-09-25' },
+                    labDip: { status: 'Approved', date: '2026-09-28' },
+                    fitSample: { status: 'Submitted', date: '2026-10-05' },
+                    ppSample: { status: 'Pending', date: '' },
+                    bulkYarn: { status: 'Pending', date: '' },
+                    knitting: { status: 'Pending', date: '' },
+                    washing: { status: 'Pending', date: '' },
+                    inspection: { status: 'Pending', date: '' },
+                    shippingDocs: { status: 'Pending', date: '' }
+                }
+            },
+            {
+                id: 'style_102',
+                styleNo: 'PSL-9021',
+                buyer: 'Zara Man',
+                gauge: '7GG',
+                yarn: '60% Cotton 40% Acrylic Heavy Twist',
+                quantity: 8500,
+                fob: 11.50,
+                orderDate: '2026-08-20',
+                shipDate: '2026-10-30',
+                status: 'Knitting/Production',
+                image: '',
+                techpackName: 'Zara_Cardigan_TechSpec.pdf',
+                techpackData: '',
+                tna: {
+                    yarnApproval: { status: 'Approved', date: '2026-09-01' },
+                    labDip: { status: 'Approved', date: '2026-09-05' },
+                    fitSample: { status: 'Approved', date: '2026-09-18' },
+                    ppSample: { status: 'Approved', date: '2026-09-28' },
+                    bulkYarn: { status: 'Approved', date: '2026-10-02' },
+                    knitting: { status: 'In-Progress', date: '2026-10-08' },
+                    washing: { status: 'Pending', date: '' },
+                    inspection: { status: 'Pending', date: '' },
+                    shippingDocs: { status: 'Pending', date: '' }
+                }
+            }
+        ];
+
+        let styles = JSON.parse(localStorage.getItem(STORAGE_KEY_STYLES)) || initialSampleStyles;
+        let calendarNotes = JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES)) || {
+            '2026-10-15': 'Yarn delivery PSL-7740',
+            '2026-10-22': 'PP Sample Fitting'
+        };
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY_STYLES, JSON.stringify(styles));
+            localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(calendarNotes));
+        }
+
+        function updateDigitalClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+
+            const lang = i18n[currentLang];
+            const dayName = lang.daysFull[now.getDay()];
+            const dateNum = now.getDate();
+            const monthName = lang.months[now.getMonth()];
+            const yearNum = now.getFullYear();
+
+            const dateStr = currentLang === 'BN' 
+                ? `${dayName}, ${dateNum} ${monthName} ${yearNum}`
+                : `${dayName}, ${monthName} ${dateNum}, ${yearNum}`;
+
+            document.getElementById('digital-clock').innerText = timeStr;
+            document.getElementById('digital-date').innerText = dateStr;
+        }
+        setInterval(updateDigitalClock, 1000);
+
+        let currentCalendarDate = new Date(2026, 9, 1); // Oct 2026 default
+
+        function renderCalendarDaysHeader() {
+            const headerContainer = document.getElementById('calendar-days-header');
+            const lang = i18n[currentLang];
+            headerContainer.innerHTML = `
+                <div class="text-rose-400">${lang.days[0]}</div>
+                <div>${lang.days[1]}</div>
+                <div>${lang.days[2]}</div>
+                <div>${lang.days[3]}</div>
+                <div>${lang.days[4]}</div>
+                <div>${lang.days[5]}</div>
+                <div class="text-amber-400">${lang.days[6]}</div>
+            `;
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const lang = i18n[currentLang];
+
+            document.getElementById('calendar-month-title').innerText = `${lang.months[month]} ${year}`;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const today = new Date();
+            const isCurrentMonthNow = today.getFullYear() === year && today.getMonth() === month;
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = "bg-slate-900/20 rounded-xl border border-slate-800/40 p-1 opacity-20";
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= totalDaysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasNote = calendarNotes[dateKey];
+                const isToday = isCurrentMonthNow && today.getDate() === day;
+
+                dayCell.className = `min-h-[52px] p-1.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between relative group ${
+                    isToday
+                    ? 'bg-sky-500/20 border-sky-400/80 shadow-md shadow-sky-500/20'
+                    : 'bg-slate-900/50 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700'
+                }`;
+
+                dayCell.onclick = () => openCalendarNoteModal(dateKey, hasNote || '');
+
+                dayCell.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold ${isToday ? 'text-sky-300 glow-text' : 'text-slate-300'}">${day}</span>
+                        ${hasNote ? '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>' : ''}
+                    </div>
+                    ${hasNote ? `<div class="text-[10px] text-amber-200/90 truncate mt-1 bg-amber-950/60 px-1 py-0.5 rounded border border-amber-800/40">${hasNote}</div>` : ''}
+                `;
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function resetToCurrentMonth() {
+            currentCalendarDate = new Date();
+            renderCalendar();
+        }
+
+        function openCalendarNoteModal(dateKey, currentText) {
+            document.getElementById('calendar-note-date-key').value = dateKey;
+            document.getElementById('calendar-note-text').value = currentText;
+            document.getElementById('calendar-note-date-title').innerText = `${i18n[currentLang].calNoteTitle} (${dateKey})`;
+            document.getElementById('calendar-note-modal').classList.remove('hidden');
+        }
+
+        function closeCalendarNoteModal() {
+            document.getElementById('calendar-note-modal').classList.add('hidden');
+        }
+
+        function saveCalendarNote() {
+            const dateKey = document.getElementById('calendar-note-date-key').value;
+            const text = document.getElementById('calendar-note-text').value.trim();
+            if (text) {
+                calendarNotes[dateKey] = text;
+            } else {
+                delete calendarNotes[dateKey];
+            }
+            saveToStorage();
+            renderCalendar();
+            closeCalendarNoteModal();
+        }
+
+        function deleteCalendarNote() {
+            const dateKey = document.getElementById('calendar-note-date-key').value;
+            delete calendarNotes[dateKey];
+            saveToStorage();
+            renderCalendar();
+            closeCalendarNoteModal();
+        }
+
+        function calculateKPIs() {
+            const totalStyles = styles.length;
+            const totalQty = styles.reduce((acc, s) => acc + (parseInt(s.quantity) || 0), 0);
+            const totalValue = styles.reduce((acc, s) => acc + ((parseInt(s.quantity) || 0) * (parseFloat(s.fob) || 0)), 0);
+
+            let pendingCount = 0;
+            styles.forEach(s => {
+                if (s.tna) {
+                    Object.values(s.tna).forEach(item => {
+                        if (item.status === 'Pending' || item.status === 'Submitted') pendingCount++;
+                    });
+                }
+            });
+
+            document.getElementById('kpi-total-styles').innerText = totalStyles;
+            document.getElementById('kpi-total-qty').innerText = `${totalQty.toLocaleString()} Pcs`;
+            document.getElementById('kpi-total-value').innerText = `$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('kpi-pending-approvals').innerText = pendingCount;
+
+            document.getElementById('quick-active-orders').innerText = totalStyles;
+            const upcomingShips = styles.filter(s => s.status !== 'Shipped').length;
+            document.getElementById('quick-upcoming-ship').innerText = upcomingShips;
+        }
+
+        function renderStyleList() {
+            const container = document.getElementById('styles-container');
+            container.innerHTML = '';
+
+            const lang = i18n[currentLang];
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('filter-status').value;
+            const gaugeFilter = document.getElementById('filter-gauge').value;
+
+            const filtered = styles.filter(s => {
+                const matchSearch = s.styleNo.toLowerCase().includes(searchTerm) ||
+                                    s.buyer.toLowerCase().includes(searchTerm) ||
+                                    s.yarn.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'ALL' || s.status === statusFilter;
+                const matchGauge = gaugeFilter === 'ALL' || s.gauge === gaugeFilter;
+                return matchSearch && matchStatus && matchGauge;
+            });
+
+            document.getElementById('styles-count-badge').innerText = `${filtered.length} ${lang.stylesCountSuffix}`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-panel rounded-2xl p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-600"></i>
+                        <p class="text-sm">No styles found.</p>
+                    </div>
+                `;
+                calculateKPIs();
+                return;
+            }
+
+            filtered.forEach(s => {
+                const totalVal = (parseFloat(s.quantity) || 0) * (parseFloat(s.fob) || 0);
+                const techpackLink = s.techpackData ? s.techpackData : '#';
+
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-2xl p-5 border border-slate-700/60 space-y-4 hover:border-slate-600 transition-all animate-fade-in-up";
+
+                card.innerHTML = `
+                    <!-- Header -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 rounded-xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                                ${s.image ? `<img src="${s.image}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-shirt text-2xl text-slate-600"></i>`}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h4 class="text-lg font-extrabold text-white tracking-wide">${s.styleNo}</h4>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-full">${s.gauge}</span>
+                                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 rounded-full"><i class="fa-solid fa-user-tag text-xs mr-1 text-slate-400"></i>${s.buyer}</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1"><i class="fa-solid fa-scroll text-slate-400 mr-1"></i> ${s.yarn}</p>
+                            </div>
+                        </div>
+
+                        <!-- Status & Controls -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-3 py-1 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/30">
+                                <i class="fa-solid fa-spinner animate-spin text-[10px] mr-1"></i> ${s.status}
+                            </span>
+                            <button onclick="editStyle('${s.id}')" class="p-2 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-all" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteStyle('${s.id}')" class="p-2 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 rounded-xl border border-rose-500/20 transition-all" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800 text-xs">
+                        <div>
+                            <span class="text-slate-400 block">${lang.orderQtyText}</span>
+                            <span class="font-bold text-white text-sm">${parseInt(s.quantity).toLocaleString()} Pcs</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">${lang.fobPriceText}</span>
+                            <span class="font-bold text-emerald-400 text-sm">$${parseFloat(s.fob).toFixed(2)}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">${lang.totalValText}</span>
+                            <span class="font-bold text-emerald-300 text-sm">$${totalVal.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">${lang.shipDateText}</span>
+                            <span class="font-bold text-sky-300 text-sm">${s.shipDate}</span>
+                        </div>
+                    </div>
+
+                    <!-- Tech Pack Attachment Link -->
+                    <div class="flex items-center justify-between text-xs bg-slate-900/60 px-3.5 py-2 rounded-xl border border-slate-800">
+                        <span class="text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-rose-400 text-sm"></i>
+                            ${lang.techpackLabel} <strong class="text-slate-200 font-medium">${s.techpackName || lang.noTechpack}</strong>
+                        </span>
+                        ${s.techpackName ? `<a href="${techpackLink}" download="${s.techpackName}" class="text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1"><i class="fa-solid fa-download"></i> ${lang.downloadText}</a>` : '<span class="text-slate-500">N/A</span>'}
+                    </div>
+
+                    <!-- Time & Action Steps -->
+                    <div class="pt-2">
+                        <div class="text-xs font-bold text-sky-300 mb-2.5 flex items-center gap-2">
+                            <i class="fa-solid fa-timeline"></i> ${lang.tnaTitle}
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                            ${renderTnABadge(s.id, 'yarnApproval', lang.tnaSteps.yarnApproval, s.tna?.yarnApproval)}
+                            ${renderTnABadge(s.id, 'labDip', lang.tnaSteps.labDip, s.tna?.labDip)}
+                            ${renderTnABadge(s.id, 'fitSample', lang.tnaSteps.fitSample, s.tna?.fitSample)}
+                            ${renderTnABadge(s.id, 'ppSample', lang.tnaSteps.ppSample, s.tna?.ppSample)}
+                            ${renderTnABadge(s.id, 'bulkYarn', lang.tnaSteps.bulkYarn, s.tna?.bulkYarn)}
+                            ${renderTnABadge(s.id, 'knitting', lang.tnaSteps.knitting, s.tna?.knitting)}
+                            ${renderTnABadge(s.id, 'washing', lang.tnaSteps.washing, s.tna?.washing)}
+                            ${renderTnABadge(s.id, 'inspection', lang.tnaSteps.inspection, s.tna?.inspection)}
+                            ${renderTnABadge(s.id, 'shippingDocs', lang.tnaSteps.shippingDocs, s.tna?.shippingDocs)}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            calculateKPIs();
+        }
+
+        function renderTnABadge(styleId, tnaKey, label, data = { status: 'Pending', date: '' }) {
+            const statusColors = {
+                'Approved': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+                'In-Progress': 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+                'Submitted': 'bg-sky-500/20 text-sky-300 border-sky-500/40',
+                'Pending': 'bg-slate-800/80 text-slate-400 border-slate-700/60'
+            };
+
+            const colorClass = statusColors[data.status] || statusColors['Pending'];
+
+            return `
+                <div onclick="toggleTnAStatus('${styleId}', '${tnaKey}')" class="p-2 rounded-xl border ${colorClass} cursor-pointer transition-all hover:scale-105 select-none">
+                    <div class="text-[11px] font-semibold truncate">${label}</div>
+                    <div class="text-[10px] opacity-80 mt-0.5 flex justify-between items-center">
+                        <span>${data.status}</span>
+                        <i class="fa-solid fa-rotate text-[9px]"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleTnAStatus(styleId, tnaKey) {
+            const style = styles.find(s => s.id === styleId);
+            if (!style) return;
+
+            if (!style.tna) style.tna = {};
+            if (!style.tna[tnaKey]) style.tna[tnaKey] = { status: 'Pending', date: '' };
+
+            const statusCycle = ['Pending', 'Submitted', 'In-Progress', 'Approved'];
+            const currentIndex = statusCycle.indexOf(style.tna[tnaKey].status);
+            const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+
+            style.tna[tnaKey].status = nextStatus;
+            saveToStorage();
+            renderStyleList();
+        }
+
+        function openNewStyleModal() {
+            document.getElementById('modal-title').innerText = i18n[currentLang].modalTitleAdd;
+            document.getElementById('style-form').reset();
+            document.getElementById('form-style-id').value = '';
+            document.getElementById('form-image-base64').value = '';
+            document.getElementById('form-techpack-data').value = '';
+            document.getElementById('form-techpack-name').value = '';
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('style-modal').classList.remove('hidden');
+        }
+
+        function closeStyleModal() {
+            document.getElementById('style-modal').classList.add('hidden');
+        }
+
+        function editStyle(id) {
+            const style = styles.find(s => s.id === id);
+            if (!style) return;
+
+            document.getElementById('modal-title').innerText = i18n[currentLang].modalTitleEdit;
+            document.getElementById('form-style-id').value = style.id;
+            document.getElementById('form-style-no').value = style.styleNo;
+            document.getElementById('form-buyer').value = style.buyer;
+            document.getElementById('form-gauge').value = style.gauge;
+            document.getElementById('form-yarn').value = style.yarn;
+            document.getElementById('form-quantity').value = style.quantity;
+            document.getElementById('form-fob').value = style.fob;
+            document.getElementById('form-order-date').value = style.orderDate;
+            document.getElementById('form-ship-date').value = style.shipDate;
+            document.getElementById('form-status').value = style.status;
+
+            document.getElementById('form-image-base64').value = style.image || '';
+            document.getElementById('form-techpack-name').value = style.techpackName || '';
+            document.getElementById('form-techpack-data').value = style.techpackData || '';
+
+            if (style.image) {
+                document.getElementById('image-preview').src = style.image;
+                document.getElementById('image-preview-container').classList.remove('hidden');
+            } else {
+                document.getElementById('image-preview-container').classList.add('hidden');
+            }
+
+            document.getElementById('style-modal').classList.remove('hidden');
+        }
+
+        function deleteStyle(id) {
+            if (confirm('Delete this style permanently?')) {
+                styles = styles.filter(s => s.id !== id);
+                saveToStorage();
+                renderStyleList();
+            }
+        }
+
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('form-image-base64').value = evt.target.result;
+                    document.getElementById('image-preview').src = evt.target.result;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleTechpackFile(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('form-techpack-name').value = file.name;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('form-techpack-data').value = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleStyleSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('form-style-id').value || 'style_' + Date.now();
+            const existingIndex = styles.findIndex(s => s.id === id);
+
+            const styleObj = {
+                id: id,
+                styleNo: document.getElementById('form-style-no').value,
+                buyer: document.getElementById('form-buyer').value,
+                gauge: document.getElementById('form-gauge').value,
+                yarn: document.getElementById('form-yarn').value,
+                quantity: parseInt(document.getElementById('form-quantity').value),
+                fob: parseFloat(document.getElementById('form-fob').value),
+                orderDate: document.getElementById('form-order-date').value,
+                shipDate: document.getElementById('form-ship-date').value,
+                status: document.getElementById('form-status').value,
+                image: document.getElementById('form-image-base64').value,
+                techpackName: document.getElementById('form-techpack-name').value,
+                techpackData: document.getElementById('form-techpack-data').value,
+                tna: existingIndex >= 0 && styles[existingIndex].tna ? styles[existingIndex].tna : {
+                    yarnApproval: { status: 'Pending', date: '' },
+                    labDip: { status: 'Pending', date: '' },
+                    fitSample: { status: 'Pending', date: '' },
+                    ppSample: { status: 'Pending', date: '' },
+                    bulkYarn: { status: 'Pending', date: '' },
+                    knitting: { status: 'Pending', date: '' },
+                    washing: { status: 'Pending', date: '' },
+                    inspection: { status: 'Pending', date: '' },
+                    shippingDocs: { status: 'Pending', date: '' }
+                }
+            };
+
+            if (existingIndex >= 0) {
+                styles[existingIndex] = styleObj;
+            } else {
+                styles.unshift(styleObj);
+            }
+
+            saveToStorage();
+            renderStyleList();
+            closeStyleModal();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-status').value = 'ALL';
+            document.getElementById('filter-gauge').value = 'ALL';
+            renderStyleList();
+        }
+
+        function exportStylesCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Style No,Buyer,Gauge,Yarn Composition,Quantity (Pcs),FOB ($),Total Value ($),Order Date,Ship Date,Status\n";
+
+            styles.forEach(s => {
+                const totalVal = (s.quantity || 0) * (s.fob || 0);
+                const row = `"${s.styleNo}","${s.buyer}","${s.gauge}","${s.yarn.replace(/"/g, '""')}","${s.quantity}","${s.fob}","${totalVal}","${s.orderDate}","${s.shipDate}","${s.status}"`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Priti_Sweater_Styles_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadZipApp() {
+            const zip = new JSZip();
+            const currentHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+
+            zip.file("index.html", currentHTML);
+            zip.file("README.txt", "Priti Sweater Limited - Merchandising Portal\nSingle-file runnable web app with English and Bangla support.");
+
+            zip.generateAsync({ type: "blob" }).then(function (content) {
+                saveAs(content, "Priti_Sweater_Merchandising_Portal.zip");
+            });
+        }
+
+        window.onload = function() {
+            applyLanguage();
+        };
+    </script>
+
+</body></html>
